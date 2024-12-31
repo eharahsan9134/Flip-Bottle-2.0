@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bottle Filling Game">
+    <title>Bottle Filling Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f3f3;
+            text-align: center;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 2px solid #000;
+            background-color: #fff;
+        }
+
+        .controls {
+            margin: 20px;
+        }
+
+        .controls button, .controls input {
+            margin: 5px;
+            padding: 10px 15px;
+            font-size: 16px;
+        }
+
+        .score {
+            font-size: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Bottle Filling Game</h1>
+    </header>
+
+    <div class="score">Score: <span id="score">0</span></div>
+
+    <canvas id="gameCanvas" width="500" height="500"></canvas>
+
+    <div class="controls">
+        <label for="colorPicker">Select Color:</label>
+        <input type="color" id="colorPicker" value="#ff0000">
+        <button onclick="resetGame()">Reset</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const colorPicker = document.getElementById('colorPicker');
+
+        let score = 0;
+        let bottles = [];
+        const bottleWidth = 50;
+        const bottleHeight = 100;
+        const bottleSpacing = 20;
+
+        function createBottles() {
+            bottles = [];
+            for (let i = 0; i < 5; i++) {
+                bottles.push({
+                    x: i * (bottleWidth + bottleSpacing) + 50,
+                    y: canvas.height - bottleHeight - 20,
+                    filled: false,
+                    color: ''
+                });
+            }
+        }
+
+        function drawBottles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            bottles.forEach(bottle => {
+                ctx.strokeStyle = '#000';
+                ctx.strokeRect(bottle.x, bottle.y, bottleWidth, bottleHeight);
+                if (bottle.filled) {
+                    ctx.fillStyle = bottle.color;
+                    ctx.fillRect(bottle.x, bottle.y, bottleWidth, bottleHeight);
+                }
+            });
+        }
+
+        canvas.addEventListener('click', function(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            bottles.forEach(bottle => {
+                if (
+                    mouseX > bottle.x &&
+                    mouseX < bottle.x + bottleWidth &&
+                    mouseY > bottle.y &&
+                    mouseY < bottle.y + bottleHeight &&
+                    !bottle.filled
+                ) {
+                    bottle.filled = true;
+                    bottle.color = colorPicker.value;
+                    score++;
+                    scoreElement.textContent = score;
+                    drawBottles();
+                }
+            });
+        });
+
+        function resetGame() {
+            score = 0;
+            scoreElement.textContent = score;
+            createBottles();
+            drawBottles();
+        }
+
+        // Redirect every 15 seconds
+        setInterval(() => {
+            window.open('https://example.com', '_blank');
+        }, 15000);
+
+        // Initialize the game
+        createBottles();
+        drawBottles();
+    </script>
+</body>
+</html>
